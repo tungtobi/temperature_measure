@@ -10,11 +10,11 @@ import (
 //SetupRouter ... Configure routes
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(cors.Default())
 	grp := r.Group("/BTL")
 	{
 		grp.GET("", Controllers.GetTemperature)
 		// grp2.POST("", Controllers.CreateTemperature)
 	}
-	r.Use(cors.Default())
 	return r
 }
