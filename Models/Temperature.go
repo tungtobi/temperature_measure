@@ -2,11 +2,10 @@ package Models
 
 import (
 	"rest-test/Config"
-	"time"
 )
 
 // GetTemprature re
-func GetTemprature(temperature *[]Temperature, startTime time.Time, endTime time.Time) (err error) {
+func GetTemprature(temperature *[]Temperature, startTime uint64, endTime uint64) (err error) {
 	if err = Config.DB.Where("created_at BETWEEN ? AND ?", startTime, endTime).Find(temperature).Error; err != nil {
 		return err
 	}

@@ -6,18 +6,16 @@ import (
 	"net/http"
 	"rest-test/Models"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-func stringToTime(timeInput string) (timeOutput time.Time) {
+func stringToTime(timeInput string) uint64 {
 	unixTime, err := strconv.Atoi(timeInput)
 	if err != nil {
 		log.Println(err)
 	}
-	timeOutput = time.Unix(int64(unixTime), 0)
-	return timeOutput
+	return uint64(unixTime)
 }
 
 func GetTemperature(c *gin.Context) {
