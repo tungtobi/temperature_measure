@@ -3,12 +3,12 @@
 #include <Wire.h>
 #include <Adafruit_MLX90614.h>
 
-const char* ssid = "abc123"; // Enter your WiFi name
-const char* password = "87654321"; // Enter WiFi password
+const char* ssid = "Thai Linh"; // Enter your WiFi name
+const char* password = "11111111A"; // Enter WiFi password
 const char* mqttServer = "broker.emqx.io";
 const int mqttPort = 1883;
 
-const char* TOPIC = "test/post";
+const char* TOPIC = "haupc/123";
 
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
@@ -51,7 +51,7 @@ void setup()
         }
     }
  
-    client.publish(TOPIC, "Hello from ESP8266"); //Topic name
+//    client.publish(TOPIC, "Hello from ESP8266"); //Topic name
     client.subscribe(TOPIC);
 
     Serial.println("Adafruit MLX90614");  
@@ -96,11 +96,11 @@ void loop() {
     char* jsonData = toJson(mlx.readAmbientTempC(), mlx.readObjectTempC());
     client.publish(TOPIC, jsonData);
 
-    delay(2000);
+    delay(1000);
 }
 
 char* toJson(float ambient, float object) {
-    char* s = (char*) malloc(27);
-    snprintf(s, 27, "{\"env\":%.2f, \"obj\":%.2f}", ambient, object);
+    char* s = (char*) malloc(32);
+    snprintf(s, 32, "{\"env\":%.2f, \"obj\":%.2f\}", ambient, object);
     return s;
 }
