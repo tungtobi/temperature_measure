@@ -1,6 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Wire.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <Adafruit_MLX90614.h>
 
 const char* ssid = "Thai Linh"; // Enter your WiFi name
@@ -14,6 +16,13 @@ Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+// Define NTP Client to get time
+const long utcOffsetInSeconds = 0;
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 void setup()
 {
@@ -92,6 +101,18 @@ void loop() {
 
     Serial.println();
 
+    // Time
+    timeClient.update();
+
+    Serial.print(daysOfTheWeek[timeClient.getDay()]);
+    Serial.print(", ");
+    Serial.print(timeClient.getHours());
+    Serial.print(":");
+    Serial.print(timeClient.getMinutes());
+    Serial.print(":");
+    Serial.println(timeClient.getSeconds());
+    Serial.println(timeClient.getEpochTime());
+
     // convert to json format
     char* jsonData = toJson(mlx.readAmbientTempC(), mlx.readObjectTempC());
     client.publish(TOPIC, jsonData);
@@ -100,7 +121,7 @@ void loop() {
 }
 
 char* toJson(float ambient, float object) {
-    char* s = (char*) malloc(32);
-    snprintf(s, 32, "{\"env\":%.2f, \"obj\":%.2f\}", ambient, object);
+    char* s = (char*) malloc(50);
+    snprintf(s, 50, "{\"time\":%d, env\":%.2f, \"obj\":%.2f\}", timeClient.getEpochTime(), ambient, object);
     return s;
 }
