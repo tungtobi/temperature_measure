@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import '@fortawesome/fontawesome-free/css/all.css';
 import mqtt from 'mqtt'
+import _ from 'lodash';
 
 import './App.css';
 import LineChart from './LineChart';
 
 const App = () => {
+  const [data, setData] = useState([])
+  console.log("Data init: ", data);
   // <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   // const mqtt = require('mqtt')
   // connect options
@@ -52,13 +55,18 @@ const App = () => {
   })
 
   client.on('message', (topic, message) => {
-    console.log('Received form', topic, ':', message.toString())
+    const rawData = message.toString();
+    const jsonData = JSON.parse(rawData);
+    const tmp = _.get(jsonData, 'jsonData');
+    setData({...data, tmp});
+    console.log("Data: ", data);
+    console.log('Received form', topic, ':', jsonData);
   
     // disconnect
     client.end()
   })
 
-  return <LineChart />;
+  return <LineChart webSocketData={data}/>;
 };
 
 export default App;

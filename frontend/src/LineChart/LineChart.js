@@ -6,12 +6,15 @@ import DatePicker from 'react-datepicker';
 
 import Wrapper from './LineChart.style';
 
-const ChartLine = (props) => {
+const ChartLine = ({webSocketData}) => {
+  const wsDataEnv = _.map(webSocketData, (e) => e.env);
+  const wsDataObj = _.map(webSocketData, (e) => e.obj);
+
   const [fromDate, setFromDate] = useState(new Date().setHours(1));
   const [toDate, setToDate] = useState(new Date().setHours(23));
 
-  const [dataAmbient, setDataAmbient] = useState([]);
-  const [dataObject, setDataObject] = useState([]);
+  const [dataAmbient, setDataAmbient] = useState(wsDataEnv);
+  const [dataObject, setDataObject] = useState(wsDataObj);
 
   const options = {
     chart: {
