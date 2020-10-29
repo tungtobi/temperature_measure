@@ -82,6 +82,10 @@ void callback(char* topic, byte* payload, unsigned int length)
     digitalWrite(LED, LOW); // Turn the LED on (Note that LOW is the voltage level)
     delay(10);
     digitalWrite(LED, HIGH); // Turn the LED off by making the voltage HIGH
+    delay(10);
+    digitalWrite(LED, LOW); // Turn the LED on (Note that LOW is the voltage level)
+    delay(10);
+    digitalWrite(LED, HIGH); // Turn the LED off by making the voltage HIGH
     
     Serial.print("Message arrived in topic: ");
     Serial.println(topic);
@@ -131,13 +135,9 @@ void loop() {
     char* jsonData = toJson(mlx.readAmbientTempC(), mlx.readObjectTempC());
     client.publish(TOPIC, jsonData);
     digitalWrite(LED, LOW); // Turn the LED on (Note that LOW is the voltage level)
-    delay(10);
+    delay(100);
     digitalWrite(LED, HIGH); // Turn the LED off by making the voltage HIGH
-    delay(10);
-    digitalWrite(LED, LOW); // Turn the LED on (Note that LOW is the voltage level)
-    delay(10);
-    digitalWrite(LED, HIGH); // Turn the LED off by making the voltage HIGH
-    delay(1000);
+    delay(900);
 }
 
 char* toJson(float ambient, float object) {
