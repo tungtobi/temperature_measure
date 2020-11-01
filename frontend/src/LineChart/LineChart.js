@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import _ from 'lodash';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
 import DatePicker from 'react-datepicker';
-
+import moment from 'moment';
 import Wrapper from './LineChart.style';
 
-const ChartLine = ({webSocketData}) => {
-  const wsDataEnv = _.map(webSocketData, (e) => e.env);
-  const wsDataObj = _.map(webSocketData, (e) => e.obj);
+const ChartLine = ({ webSocketData }) => {
+  console.log('webSocketData', webSocketData);
+  const wsDataEnv = useMemo(() => _.map(webSocketData, (e) => e.env), [
+    webSocketData,
+  ]);
+  const wsDataObj = useMemo(() => _.map(webSocketData, (e) => e.obj), [
+    webSocketData,
+  ]);
+
+  console.log('wsDataEnv', wsDataEnv);
+  console.log('wsDataObj', wsDataObj);
 
   const [fromDate, setFromDate] = useState(new Date().setHours(1));
   const [toDate, setToDate] = useState(new Date().setHours(23));
@@ -16,70 +24,80 @@ const ChartLine = ({webSocketData}) => {
   const [dataAmbient, setDataAmbient] = useState(wsDataEnv);
   const [dataObject, setDataObject] = useState(wsDataObj);
 
-  const options = {
-    chart: {
-      id: 'basic-bar',
-    },
-    background: '#f2f2f2',
-    colors: ['#008ffb', '#8c8c8c'],
-    xaxis: {
-      title: {
-        text: 'Measurement times',
-        style: {
-          color: '#000',
-        },
+  const options = useMemo(
+    () => ({
+      chart: {
+        id: 'basic-bar',
       },
-    },
-    yaxis: [
-      {
-        axisTicks: {
-          show: true,
-        },
-        axisBorder: {
-          show: true,
-          color: '#FF1654',
-        },
-        labels: {
+      background: '#f2f2f2',
+      colors: ['#008ffb', '#8c8c8c'],
+      xaxis: {
+        type: 'categories',
+        categories: _.map(webSocketData, (e) =>
+          moment(e.CreateAt).format('DD-MM-yyyy hh:ss')
+        ),
+        title: {
+          text: 'Measurement times',
           style: {
-            colors: '#FF1654',
+            color: '#000',
           },
         },
-        title: {
-          text: 'Temperature',
-          style: {
+      },
+      yaxis: [
+        {
+          axisTicks: {
+            show: true,
+          },
+          axisBorder: {
+            show: true,
             color: '#FF1654',
           },
+          labels: {
+            style: {
+              colors: '#FF1654',
+            },
+          },
+          title: {
+            text: 'Temperature',
+            style: {
+              color: '#FF1654',
+            },
+          },
+        },
+      ],
+      noData: {
+        text: 'No result',
+        align: 'center',
+        verticalAlign: 'middle',
+        offsetX: 0,
+        offsetY: 0,
+        style: {
+          color: undefined,
+          fontSize: '14px',
+          fontFamily: undefined,
         },
       },
-    ],
-    noData: {
-      text: 'No result',
-      align: 'center',
-      verticalAlign: 'middle',
-      offsetX: 0,
-      offsetY: 0,
-      style: {
-        color: undefined,
-        fontSize: '14px',
-        fontFamily: undefined,
+      legend: {
+        horizontalAlign: 'right',
+        offsetX: 40,
       },
-    },
-    legend: {
-      horizontalAlign: 'right',
-      offsetX: 40,
-    },
-  };
+    }),
+    [webSocketData]
+  );
 
-  const series = [
-    {
-      name: 'Object',
-      data: dataObject,
-    },
-    {
-      name: 'Ambient',
-      data: dataAmbient,
-    },
-  ];
+  const series = useMemo(
+    () => [
+      {
+        name: 'Object',
+        data: dataObject,
+      },
+      {
+        name: 'Ambient',
+        data: dataAmbient,
+      },
+    ],
+    [dataObject, dataAmbient]
+  );
 
   const handleTimeRange = () => {
     const from = Math.round(new Date(fromDate).getTime() / 1000);
@@ -112,7 +130,7 @@ const ChartLine = ({webSocketData}) => {
         <div className="item-date">
           <label>From:</label>
           <div>
-            <i class="far fa-calendar-alt"></i>
+            <i className="far fa-calendar-alt"></i>
             <DatePicker
               selected={fromDate}
               onChange={(date) => setFromDate(date)}
@@ -124,7 +142,7 @@ const ChartLine = ({webSocketData}) => {
         <div className="item-date">
           <label>To:</label>
           <div>
-            <i class="far fa-calendar-alt"></i>
+            <i className="far fa-calendar-alt"></i>
             <DatePicker
               selected={toDate}
               onChange={(date) => setToDate(date)}
@@ -134,7 +152,7 @@ const ChartLine = ({webSocketData}) => {
           </div>
         </div>
         <button className="btn btn-success btn-sm" onClick={handleTimeRange}>
-          <i class="fas fa-check" style={{ marginRight: '5px' }}></i>
+          <i className="fas fa-check" style={{ marginRight: '5px' }}></i>
           Apply
         </button>
       </div>
