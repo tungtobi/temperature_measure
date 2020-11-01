@@ -157,7 +157,7 @@ const ChartLine = ({ webSocketData }) => {
         </button>
       </div>
       <div className="line-chart">
-        <Chart options={options} series={series} type="line" width="800px" />
+        <Chart options={options} series={series} type="line" width="1200px" />
       </div>
     </Wrapper>
   );

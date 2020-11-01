@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import '@fortawesome/fontawesome-free/css/all.css';
 import mqtt from 'mqtt';
-import _ from 'lodash';
 
 import './App.css';
 import LineChart from './LineChart';
@@ -32,9 +31,9 @@ const App = () => {
 
   const client = mqtt.connect(WebSocket_URL, options);
 
-  client.on('connect', () => {
-    console.log('Connect success');
-  });
+  // client.on('connect', () => {
+  //   console.log('Connect success');
+  // });
   client.subscribe('haupc/123', { qos: 1 }, (error) => {
     if (!error) {
       console.log('Subscribe Success');
@@ -52,7 +51,7 @@ const App = () => {
     setData([...data, jsonData]);
 
     // disconnect
-    client.end();
+    // client.end();
   });
 
   return <LineChart webSocketData={data} />;
