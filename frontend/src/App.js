@@ -33,9 +33,9 @@ const App = () => {
 
   const client = mqtt.connect(WebSocket_URL, options);
 
-  client.on('connect', () => {
-    console.log('Connect success');
-  });
+  // client.on('connect', () => {
+  //   console.log('Connect success');
+  // });
   client.subscribe('haupc/123', { qos: 1 }, (error) => {
     if (!error) {
       console.log('Subscribe Success');
@@ -53,7 +53,7 @@ const App = () => {
     setData([...data, jsonData]);
 
     // disconnect
-    client.end();
+    // client.end();
   });
 
   return (
