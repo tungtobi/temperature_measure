@@ -4,10 +4,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import '@fortawesome/fontawesome-free/css/all.css';
 import mqtt from 'mqtt';
-import _ from 'lodash';
+import { Tab, Row, Col, Nav } from 'react-bootstrap';
 
 import './App.css';
 import LineChart from './LineChart';
+import LineChartRangeTime from './LineChartRangeTime';
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -55,7 +56,32 @@ const App = () => {
     client.end();
   });
 
-  return <LineChart webSocketData={data} />;
+  return (
+    <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+      <Row>
+        <Col sm={2}>
+          <Nav variant="pills" className="flex-column">
+            <Nav.Item>
+              <Nav.Link eventKey="first">Real time</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="second">Range time</Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Col>
+        <Col sm={10}>
+          <Tab.Content>
+            <Tab.Pane eventKey="first">
+              <LineChart webSocketData={data} />
+            </Tab.Pane>
+            <Tab.Pane eventKey="second">
+              <LineChartRangeTime />
+            </Tab.Pane>
+          </Tab.Content>
+        </Col>
+      </Row>
+    </Tab.Container>
+  );
 };
 
 export default App;
