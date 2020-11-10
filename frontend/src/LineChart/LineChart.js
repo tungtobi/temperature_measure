@@ -19,6 +19,11 @@ const ChartLine = ({ webSocketData }) => {
       background: '#f2f2f2',
       colors: ['#008ffb', '#8c8c8c'],
       xaxis: {
+        labels: {
+          show: false,
+          rotate: -45,
+          rotateAlways: false,
+        },
         type: 'category',
         categories: _.map(webSocketData, (e) => {
           const tmp_date = new Date(e.CreatedAt * 1000);
