@@ -12,6 +12,8 @@ import HeaderAction from '../src/HeaderAction';
 import LineChart from './LineChart';
 import LineChartRangeTime from './LineChartRangeTime';
 
+let globalData = [];
+
 const App = () => {
   const [data, setData] = useState([]);
   const [dataRangeTime, setDataRangeTime] = useState([]);
@@ -54,7 +56,8 @@ const App = () => {
     const rawData = message.toString();
     const jsonData = JSON.parse(rawData);
 
-    setData([...data, jsonData]);
+    globalData = [...globalData, jsonData];
+    setData(globalData);
 
     // disconnect
     // client.end();
