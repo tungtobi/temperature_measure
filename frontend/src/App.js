@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
-import '@fortawesome/fontawesome-free/css/all.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Row, Container, Col } from 'react-bootstrap';
+import axios from 'axios';
 import mqtt from 'mqtt';
-import { Tab, Row, Col, Nav } from 'react-bootstrap';
 
 import './App.css';
+import HeaderAction from '../src/HeaderAction';
 import LineChart from './LineChart';
 import LineChartRangeTime from './LineChartRangeTime';
 
 const App = () => {
   const [data, setData] = useState([]);
+  const [dataRangeTime, setDataRangeTime] = useState([]);
+
   console.log('Data init: ', data);
 
   const options = {
@@ -56,31 +60,81 @@ const App = () => {
     // client.end();
   });
 
+  const [isCheck, setCheck] = useState(false);
+  const [fromDate, setFromDate] = useState(new Date().setHours(1));
+  const [toDate, setToDate] = useState(new Date().setHours(23));
+
+  const handleTimeRange = () => {
+    const from = Math.round(new Date(fromDate).getTime() / 1000);
+    const to = Math.round(new Date(toDate).getTime() / 1000);
+
+    axios
+      .get(`https://btl-backend.herokuapp.com/BTL`, {
+        params: {
+          startTime: from,
+          endTime: to,
+        },
+      })
+      .then(function (response) {
+        const { data: resData } = response;
+        setDataRangeTime(resData);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  };
+
+  const onChangeFromDate = (date) => {
+    setFromDate(date);
+  };
+
+  const onChangeToDate = (date) => {
+    setToDate(date);
+  };
+
   return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey="first">
-      <Row>
-        <Col sm={2}>
-          <Nav variant="pills" className="flex-column">
-            <Nav.Item>
-              <Nav.Link eventKey="first">Real time</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="second">Range time</Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </Col>
-        <Col sm={10}>
-          <Tab.Content>
-            <Tab.Pane eventKey="first">
-              <LineChart webSocketData={data} />
-            </Tab.Pane>
-            <Tab.Pane eventKey="second">
-              <LineChartRangeTime />
-            </Tab.Pane>
-          </Tab.Content>
+    <Container fluid className="wrapper-container">
+      <Row className="row-first">
+        <Col md={12}>
+          <Row className="check-group">
+            {isCheck ? (
+              <i
+                className="fas fa-check-square icon-check"
+                onClick={() => setCheck(!isCheck)}
+              ></i>
+            ) : (
+              <i
+                className="far fa-square icon-check"
+                size={30}
+                onClick={() => setCheck(!isCheck)}
+              ></i>
+            )}
+            <div>Hiển thị biểu đồ theo thời gian</div>
+          </Row>
+
+          <Row>
+            {isCheck && (
+              <HeaderAction
+                fromDate={fromDate}
+                toDate={toDate}
+                onChangeFromDate={onChangeFromDate}
+                onChangeToDate={onChangeToDate}
+                handleTimeRange={handleTimeRange}
+              />
+            )}
+          </Row>
         </Col>
       </Row>
-    </Tab.Container>
+
+      <Row className="row-second">
+        {isCheck ? (
+          <LineChartRangeTime data={dataRangeTime} />
+        ) : (
+          <LineChart webSocketData={data} />
+        )}
+      </Row>
+    </Container>
   );
 };
 

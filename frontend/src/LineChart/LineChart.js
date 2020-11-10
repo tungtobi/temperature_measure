@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import _ from 'lodash';
 import Chart from 'react-apexcharts';
 import moment from 'moment';
-import Wrapper from './LineChart.style';
 
 const ChartLine = ({ webSocketData }) => {
   const wsDataEnv = useMemo(() => _.map(webSocketData, (e) => e.env), [
@@ -88,13 +87,7 @@ const ChartLine = ({ webSocketData }) => {
     [wsDataEnv, wsDataObj]
   );
 
-  return (
-    <Wrapper>
-      <div className="line-chart">
-        <Chart options={options} series={series} type="line" width="900px" />
-      </div>
-    </Wrapper>
-  );
+  return <Chart options={options} series={series} type="line" width="800px" />;
 };
 
 export default ChartLine;
