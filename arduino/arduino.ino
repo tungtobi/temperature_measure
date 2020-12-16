@@ -5,8 +5,8 @@
 #include <WiFiUdp.h>
 #include <Adafruit_MLX90614.h>
 
-const char* ssid = "Thai Linh"; // Enter your WiFi name
-const char* password = "11111111A"; // Enter WiFi password
+const char* ssid = "TP-LINK_A24CF4"; // Enter your WiFi name
+const char* password = "71297354"; // Enter WiFi password
 const char* mqttServer = "broker.emqx.io";
 const int mqttPort = 1883;
 
@@ -25,6 +25,26 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 const long utcOffsetInSeconds = 0;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+
+void reconnect()
+{
+  while (!client.connected()) 
+    {
+        Serial.println("Connecting to MQTT...");
+ 
+        if (client.connect("17020845"))
+        {
+            Serial.println("connected");  
+        } else {
+            Serial.print("failed with state ");
+            Serial.print(client.state());
+            delay(500);
+            digitalWrite(LED, LOW); // Turn the LED on (Note that LOW is the voltage level)
+            delay(1500);
+            digitalWrite(LED, HIGH); // Turn the LED off by making the voltage HIGH
+        }
+    }
+}
 
 void setup()
 {
@@ -53,22 +73,7 @@ void setup()
     client.setServer(mqttServer, mqttPort);
     client.setCallback(callback);
  
-    while (!client.connected()) 
-    {
-        Serial.println("Connecting to MQTT...");
- 
-        if (client.connect("ESP8266Client"))
-        {
-            Serial.println("connected");  
-        } else {
-            Serial.print("failed with state ");
-            Serial.print(client.state());
-            delay(500);
-            digitalWrite(LED, LOW); // Turn the LED on (Note that LOW is the voltage level)
-            delay(1500);
-            digitalWrite(LED, HIGH); // Turn the LED off by making the voltage HIGH
-        }
-    }
+    reconnect();
  
 //    client.publish(TOPIC, "Hello from ESP8266"); //Topic name
     client.subscribe(TOPIC);
@@ -101,6 +106,8 @@ void callback(char* topic, byte* payload, unsigned int length)
 }
  
 void loop() {
+    reconnect();
+    
     client.loop();
 
     Serial.print("Ambient = ");
